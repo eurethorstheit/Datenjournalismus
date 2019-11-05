@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <h1>{{ title }}</h1>
+   <div class="container">
+  <div class="row">
+
+    <div class="col-xs-6">
+
+      <p>Stadt</p>
+        <div class="list-group">
+            {% for post in posts %}
+        <a href="#" class="list-group-item list-group-item-action">{{ post.Stadt }}</a>
+            {% endfor%}
+    </div>
+
+    </div>
+
+    <div class="col-xs-6">
+      <p>PLZ</p>
+    <div class="list-group">
+            {% for post in posts %}
+        <a href="#" class="list-group-item list-group-item-action">{{ post.PLZ }}</a>
+            {% endfor%}
+    </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+{% endblock content %}
+
+
+
+
+

@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+import click, toml
+import pandas as pd
+import sqlalchemy
+import sys, os
+from dbconfig import dbconfig, dtypes
+from pydb import Navigator
+from pprint import pprint
+import pandas as pd
+
+@click.command()
+@click.option('--write-to-table','-w', default="", help='Writes to an new table')
+@click.option('--get-table','-r', default="", help='Writes to an new table')
+def start(**kwargs):
+    """Simple database manager for the MDR-Project."""
+
+    if kwargs['write_to_table']:
+        dbconfig.table_write = True
+        dbconfig.table_replace = True
+        dbconfig.table_csv_file = kwargs['write_to_table']
+        dbconfig.table_name = os.path.basename(dbconfig.table_csv_file).split('.')[0]
+        dbconfig.table_dtypes = dtypes[dbconfig.table_name]
+
+        ''' Check if csv file exists'''
+        if not os.path.isfile(dbconfig.table_csv_file):
+            exit("No such csv file exists within csvfiles folder")
+
+    elif kwargs['get_table']:
+        dbconfig.table_write = False
+        dbconfig.table_replace = False
+        dbconfig.table_name = kwargs['get_table']
+
+    else:
+        exit("Nothing chosen")
+
+    nav = Navigator()
+
+    if kwargs['write_to_table']:
+        df = pd.read_csv(dbconfig.table_csv_file)
+        print(df)
+        print("Name of table: " + str(dbconfig.table_name))
+        print("Data types:" + str(dbconfig.table_dtypes))
+        print("This Data will be inserted into Database and replaces existing table\n")
+        input('Input for proceed ...')
+
+        nav.create_table_from_pandas(df, dbconfig.table_name, dbconfig.table_dtypes)
+
+    if kwargs['get_table']:
+        data = nav.get_data_from_db(dbconfig.table_name)
+        print(data)
+
+if __name__ == '__main__':
+    start()
+
+'''
+Iterieren über types muss noch gmacht werden
+'''
