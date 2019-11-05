@@ -10,11 +10,13 @@ class Navigator():
             'mysql+pymysql://admin:mdr@localhost:3306/journalDB',
             echo=False
         )
+
+    def kleinertest(self):
         '''
-        self.csv_file = csv_file
-        self.table = table
-        self.dtypes = dtypes
+        Ein kleiner  Test
         '''
+        print("Test")
+
     def create_table_from_pandas(self, df, table_name, dtypes):
 
         df.to_sql(
@@ -33,28 +35,16 @@ class Navigator():
         df = pd.read_sql_table(_table, self.engine)
         return df
 
-    def connect_to_db(self,name_database):
-        ''' Das hier ist nun vermutlich obsolet'''
-        self.cnx = mysql.connector.connect(user='admin', password='journallie',
-                                      host='127.0.0.1',
-                                      database=name_database)
+    def get_query_data_from_db(self,table,item='Stadt',value='Augsburg'):
+        ''' Funzt noch nicht '''
+        print(table)
+        print(item)
+        print(value)
+
+        df = pd.read_sql_query(
+            sql=('SELECT Stadt, PLZ FROM +%s WHERE %s=%s' % table,item,value),
+            con=self.engine)
+        return df
 
     def insert_data_into_db(self):
         self.data.to_sql(con=self.cnx, name='table_name_for_df', if_exists='replace')
-
-    def get_data_from_csv(self,_csvfile):
-        ''' Duplikat '''
-        self.data = pandas.read_csv(_csvfile)
-        self.data = pandas.DataFrame(data=self.data)
-
-    def testdata(self):
-        print(self.csv_file)
-        print(self.table)
-        print(self.dtypes)
-#nav = Navigator() # Create Object
-'''
-print("Read toml")
-_toml = sys.argv[1]
-
-_toml_file = toml.load(_toml)
-'''

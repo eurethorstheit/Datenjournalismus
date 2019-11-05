@@ -10,7 +10,8 @@ import pandas as pd
 
 @click.command()
 @click.option('--write-to-table','-w', default="", help='Writes to an new table')
-@click.option('--get-table','-r', default="", help='Writes to an new table')
+@click.option('--get-table','-r', default="", help='Reads table and prints it out as pandas')
+@click.option('--get-query','-q', default="", help='Reads query and prints it out as pandas')
 def start(**kwargs):
     """Simple database manager for the MDR-Project."""
 
@@ -26,9 +27,9 @@ def start(**kwargs):
             exit("No such csv file exists within csvfiles folder")
 
     elif kwargs['get_table']:
-        dbconfig.table_write = False
-        dbconfig.table_replace = False
         dbconfig.table_name = kwargs['get_table']
+    elif kwargs['get_query']:
+        dbconfig.table_name = kwargs['get_query']
 
     else:
         exit("Nothing chosen")
@@ -48,6 +49,11 @@ def start(**kwargs):
     if kwargs['get_table']:
         data = nav.get_data_from_db(dbconfig.table_name)
         print(data)
+
+    if kwargs['get_query']:
+        data = nav.get_query_data_from_db(dbconfig.table_name,'Stadt','Augsburg')
+        print(data)
+
 
 if __name__ == '__main__':
     start()
