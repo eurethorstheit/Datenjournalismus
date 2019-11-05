@@ -37,12 +37,10 @@ class Navigator():
 
     def get_query_data_from_db(self,table,item='Stadt',value='Augsburg'):
         ''' Funzt noch nicht '''
-        print(table)
-        print(item)
-        print(value)
 
+        sql = ('SELECT Stadt, PLZ FROM staedte_de_tiny WHERE Stadt=Augsburg')
         df = pd.read_sql_query(
-            sql=('SELECT Stadt, PLZ FROM +%s WHERE %s=%s' % table,item,value),
+            sql=sql,
             con=self.engine)
         return df
 
