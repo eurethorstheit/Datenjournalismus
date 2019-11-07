@@ -4,10 +4,11 @@ import pandas as pd
 import sqlalchemy
 import sys
 
+
 class Navigator():
     def __init__(self):
         self.engine = sqlalchemy.create_engine(
-            'mysql+pymysql://admin:mdr@localhost:3306/journalDB',
+            'mysql+pymysql://root:journallie@localhost:3306/journalDB',
             echo=False
         )
 
@@ -18,7 +19,6 @@ class Navigator():
         print("Test")
 
     def create_table_from_pandas(self, df, table_name, dtypes):
-
         df.to_sql(
             name=table_name,
             con=self.engine,
@@ -27,18 +27,25 @@ class Navigator():
             dtype=dtypes
         )
 
-    def get_data_from_db(self,_table):
+    def get_data_from_db(self, _table):
         ''' Returns Data from table as dictionary without index
         :table table-name
         :return dict
         '''
         df = pd.read_sql_table(_table, self.engine)
-        return df
+        result = self.json_extension(df.to_json(orient='records'), len(df.index))
+        print(result)
+        return result
 
-    def get_query_data_from_db(self,table,item='Stadt',value='Augsburg'):
+    def json_extension(self, json_data_result, row_count):
+        json_string = '{{"draw":1, "recordsTotal": {}, "recordsFiltered": {}, "data":{}}}'\
+            .format(row_count, row_count, json_data_result)
+        return json_string
+
+    def get_query_data_from_db(self, table, item='Stadt', value='Augsburg'):
         ''' Funzt noch nicht '''
 
-        sql = ('SELECT Stadt, PLZ FROM staedte_de_tiny WHERE Stadt=Augsburg')
+        sql = ('SELECT Stadt, PLZ FROM staedte_de_tiny WHERE Stadt="Augsburg"')
         df = pd.read_sql_query(
             sql=sql,
             con=self.engine)

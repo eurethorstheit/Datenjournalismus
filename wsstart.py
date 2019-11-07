@@ -3,6 +3,10 @@ from flask import Flask, render_template, request, jsonify, url_for
 from flask_bootstrap import Bootstrap
 from flask_nav.elements import Navbar, View
 from flask_nav import Nav
+from flask_bootstrap import WebCDN
+
+
+
 from flask_wtf import FlaskForm
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField
 from flask_sqlalchemy import SQLAlchemy
@@ -17,7 +21,12 @@ topbar = Navbar('MDR-Project',
 
 # Initialisierung Flask
 app = Flask(__name__)
+Bootstrap(app)
+app.extensions['bootstrap']['cdns']['jquery'] = WebCDN('https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/')
+app.extensions['bootstrap']['cdns']['data_tables'] = WebCDN("https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js")
+app.config['EXPLAIN_TEMPLATE_LOADING'] = True
 app.config['SECRET_KEY'] = 'secretkey' # Notwendig fuer Forms
+
 
 # Navigationsbar
 nav = Nav(app)
@@ -33,15 +42,12 @@ def index():
     return render_template("index.html")
 
 # Ausprobierroute
-@app.route("/testdb/")
+@app.route("/testdb", methods=['GET', 'POST'])
 def testdb():
     title = "Datenbankinhalte darstellen"
     # Get Data from DB
-    data = dbNav.get_data_from_db('staedte_de_tiny').to_dict('r')
-
-    return render_template("testdb.html",
-                           title=title,
-                           posts=data)
+    data = dbNav.get_data_from_db('staedte_de_tiny')
+    return data
 
 # Ausprobierroute zu Forms mit Daten
 @app.route("/putinlistelements", methods=['GET','POST'])
@@ -71,7 +77,7 @@ def items(item):
 
 
 if __name__ == '__main__':
-    Bootstrap(app)
+
     app.run(debug=True)
 
 

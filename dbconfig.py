@@ -1,13 +1,5 @@
 from sqlalchemy.types import Integer, Text, String, DateTime, Float, Numeric, NUMERIC
 
-class dbconfig:
-    dbname = ""
-    table_name = ""
-    table_write = False
-    table_replace = False
-    table_csv_file = ""
-    table_dtypes = None
-
 dtypes = {
     'staedte_de_tiny': {'Stadt': String(60),
                   'PLZ': String(5)
@@ -18,3 +10,13 @@ dtypes = {
                   'Landkreis': String(60)
                   }
     }
+
+class dbconfig:
+    dbname = "journalDB"
+    table_name = "city"
+    table_write = True
+    table_replace = False
+    table_csv_file = ""
+    table_dtypes = dtypes['staedte_de']
+
+
