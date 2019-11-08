@@ -28,8 +28,6 @@ nav.init_app(app)
 dbNav = Navigator()
 
 
-_auswahl_reaktion_input_txt = ""
-
 @app.route("/")
 @app.route("/index")
 def index():
@@ -58,7 +56,7 @@ def putinlistelements():
 
 # Ausprobierroute mit Eingabe und Auswirkung ()
 @app.route("/auswahl_reaktion", methods=['GET','POST'])
-def auswahl_reaktion():
+def auswahl_reaktion(_auswahl_reaktion_input_txt = ""):
     title = "Auswahl mit Dropdown und Reaktion"
     # Get Data from DB
     data = dbNav.get_data_from_db('staedte_de_tiny').to_dict('r')
