@@ -35,6 +35,13 @@ class PastebinEntry(Form):
         choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
     )
 
+class Staedte(Form):
+    staedte = SelectField(
+        'Bundesdeutsche Staedte',
+        choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
+    )
+
+
 @app.route("/")
 @app.route("/index")
 def index():
@@ -78,6 +85,8 @@ def auswahl_reaktion(_auswahl_reaktion_input_txt = "", _auswahl_reaktion_selStad
     title = "Auswahl mit Dropdown und Reaktion"
     # Get Data from DB
     data = dbNav.get_data_from_db('staedte_de_tiny').to_dict('r')
+    form = Staedte()
+
     if request.method == 'POST':
         _auswahl_reaktion_input_txt = request.form['txt_input']
         _auswahl_reaktion_selStadt = request.form['selStadt']
@@ -85,6 +94,7 @@ def auswahl_reaktion(_auswahl_reaktion_input_txt = "", _auswahl_reaktion_selStad
     return render_template('auswahl_reaktion.html',
                            title=title,
                            posts=data,
+                           form=data,
                            d_output=_auswahl_reaktion_input_txt)
 
 
