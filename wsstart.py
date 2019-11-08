@@ -13,6 +13,7 @@ topbar = Navbar('MDR-Project',
     View('Testdb', 'testdb'),
     View('In Listenelemente einfügen','putinlistelements'),
     View('Auswahl und Reaktion','auswahl_reaktion'),
+    View('Select field','select'),
 )
 
 # Initialisierung Flask
@@ -27,6 +28,12 @@ nav.init_app(app)
 # Initialize Database connection
 dbNav = Navigator()
 
+
+class PastebinEntry(Form):
+    language = SelectField(
+        'Programming Language',
+        choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
+    )
 
 @app.route("/")
 @app.route("/index")
@@ -44,6 +51,17 @@ def testdb():
                            title=title,
                            posts=data)
 
+# Ausprobierroute
+@app.route("/select/", methods=['GET','POST'])
+def select():
+    title = "Select Field"
+    # Get Data from DB
+    form = PastebinEntry()
+    return render_template("select.html",
+                           title=title,
+                           form=form
+                       )
+
 # Ausprobierroute zu Forms mit Daten
 @app.route("/putinlistelements", methods=['GET','POST'])
 def putinlistelements():
@@ -56,12 +74,13 @@ def putinlistelements():
 
 # Ausprobierroute mit Eingabe und Auswirkung ()
 @app.route("/auswahl_reaktion", methods=['GET','POST'])
-def auswahl_reaktion(_auswahl_reaktion_input_txt = ""):
+def auswahl_reaktion(_auswahl_reaktion_input_txt = "", _auswahl_reaktion_selStadt = ""):
     title = "Auswahl mit Dropdown und Reaktion"
     # Get Data from DB
     data = dbNav.get_data_from_db('staedte_de_tiny').to_dict('r')
     if request.method == 'POST':
         _auswahl_reaktion_input_txt = request.form['txt_input']
+        _auswahl_reaktion_selStadt = request.form['selStadt']
 
     return render_template('auswahl_reaktion.html',
                            title=title,
@@ -83,5 +102,8 @@ if __name__ == '__main__':
 '''
 https://www.youtube.com/watch?v=BFQfVd0g9sU
 https://pythonspot.com/flask-web-forms/
+
+Probiere, mit SelectField zu arbeiten:
+https://stackoverflow.com/questions/43071278/how-to-get-value-not-key-data-from-selectfield-in-wtforms
 '''
 

@@ -11,11 +11,12 @@
 
       <p>Stadt</p>
         <div class="list-group">
-            <select>
+            <select id="selStadt" name="selStadt">
                 {% for post in posts %}
-                    <option Value="#">{{ post.Stadt }}</option>
+                    <option name="selStadt" Value="#">{{ post.Stadt }}</option>
                 {% endfor%}
             </select>
+
     </div>
 
     </div>
