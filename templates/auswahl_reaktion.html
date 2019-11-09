@@ -2,43 +2,11 @@
 
 {% block content %}
 <form action="{{ url_for('auswahl_reaktion') }}" method="post">
-<div>
+
     <h1>{{ title }}</h1>
    <div class="container">
-  <div class="row">
-
-    <div class="col-xs-4">
-
-      <p>Stadt</p>
-        <div class="list-group">
-            <select id="selStadt" name="selStadt">
-                {% for post in posts %}
-                    <option name="selStadt" Value="#">{{ post.Stadt }}</option>
-                {% endfor%}
-            </select>
-             <h2> Ficken </h2>
-            {{ form.staedte.label }}{{ form.staedte }}
-
-    </div>
-
-    </div>
-
-    <div class="col-xs-4">
-      <p>Texteingabe</p>
-    <div>
-        <input type="text" name="txt_input">
-        <input type="submit">
-    </div>
-
-    </div>
-      <div class="col-xs-4">
-        <p>Textausgabe</p>
-      </div>
-    <div>
-        <input type="text" name="txt_output" value="{{ d_output }}">
-    </div>
-  </div>
-</div>
-</div>
+       {{ form.stadt.label }}{{ form.stadt }}
+       <input type="submit">
+       <input type="text" name="txt_output" value="{{ d_output }}">
 </form>
 {% endblock content %}
