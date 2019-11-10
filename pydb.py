@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 
 import pandas as pd
 import sqlalchemy
@@ -6,11 +7,14 @@ import sys
 
 
 class Navigator():
-    def __init__(self):
+
+
+    def __init__(self, user, pw,host, database):
         self.engine = sqlalchemy.create_engine(
-            'mysql+pymysql://root:journallie@localhost:3306/journalDB',
+            'mysql+pymysql://{}:{}@{}:3306/{}'.format(user, pw, host, database),
             echo=False
         )
+
 
     def kleinertest(self):
         '''
@@ -23,8 +27,8 @@ class Navigator():
             name=table_name,
             con=self.engine,
             index=False,
-            if_exists='replace',
-            dtype=dtypes
+            if_exists='append',
+            dtype=dtypes,
         )
 
     def get_data_from_db(self, _table):
@@ -33,6 +37,16 @@ class Navigator():
         :return dict
         '''
         df = pd.read_sql_table(_table, self.engine)
+        return df
+
+    def get_data_from_db_json(self, _table):
+        ''' Returns Data from table as dictionary without index
+        :table table-name
+        :return dict
+        '''
+        df = pd.read_sql_table(_table, self.engine)
+        df['id'] = df['id'].apply(lambda old_id: 'c_' + str(old_id))
+        #df = df.rename({'id': 'DT_RowId'}, axis='columns')
         result = self.json_extension(df.to_json(orient='records'), len(df.index))
         print(result)
         return result

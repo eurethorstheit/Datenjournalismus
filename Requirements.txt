@@ -4,3 +4,4 @@ pymysql
 Flask-Navigation
 flask-wtf
 flask_sqlalchemy
+googlemaps

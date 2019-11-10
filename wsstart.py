@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import json
+import os
 from flask import Flask, render_template, request, jsonify, url_for
 from flask_bootstrap import Bootstrap
 from flask_nav.elements import Navbar, View
@@ -8,6 +10,7 @@ from flask_bootstrap import WebCDN
 
 
 from flask_wtf import FlaskForm
+from sqlalchemy.exc import DatabaseError
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField, SelectField
 from flask_sqlalchemy import SQLAlchemy
 from pydb import Navigator
@@ -22,8 +25,10 @@ topbar = Navbar('MDR-Project',
 # Initialisierung Flask
 app = Flask(__name__)
 Bootstrap(app)
-app.extensions['bootstrap']['cdns']['jquery'] = WebCDN('https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/')
-app.extensions['bootstrap']['cdns']['data_tables'] = WebCDN("https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js")
+app.extensions['bootstrap']['cdns']['jquery'] = \
+    WebCDN('https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/')
+app.extensions['bootstrap']['cdns']['data_tables'] = \
+    WebCDN("https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js")
 app.config['EXPLAIN_TEMPLATE_LOADING'] = True
 app.config['SECRET_KEY'] = 'secretkey' # Notwendig fuer Forms
 
@@ -34,7 +39,15 @@ nav.register_element('top',topbar)
 nav.init_app(app)
 
 # Initialize Database connection
-dbNav = Navigator()
+
+with app.open_resource('static/config/connection_config.json') as json_data_file:
+    data = json.load(json_data_file)
+try:
+    connection_prop = data['mysql']
+    dbNav = Navigator(connection_prop['user'], connection_prop['passwd'],
+                      connection_prop['host'], connection_prop['db'])
+except DatabaseError:
+    print("connection error")
 
 @app.route("/")
 @app.route("/index")
@@ -46,15 +59,15 @@ def index():
 def testdb():
     title = "Datenbankinhalte darstellen"
     # Get Data from DB
-    data = dbNav.get_data_from_db('staedte_de_tiny')
+    data = dbNav.get_data_from_db_json('staedte_de_tiny')
     return data
 
 # Ausprobierroute zu Forms mit Daten
-@app.route("/putinlistelements", methods=['GET','POST'])
+@app.route("/putinlistelements", methods=['GET', 'POST'])
 def putinlistelements():
     title = "Datenbankinhalte darstellen"
     # Get Data from DB
-    data = dbNav.get_data_from_db('staedte_de_tiny').to_dict('r')
+    data = dbNav.get_data_from_db_json('staedte_de_tiny').to_dict('r')
     return render_template('putinlistelements.html',
                            title=title,
                            posts=data)
@@ -64,7 +77,7 @@ def putinlistelements():
 def auswahl_reaktion():
     title = "Auswahl mit Dropdown und Reaktion"
     # Get Data from DB
-    data = dbNav.get_data_from_db('staedte_de_tiny').to_dict('r')
+    data = dbNav.get_data_from_db_json('staedte_de_tiny').to_dict('r')
     return render_template('auswahl_reaktion.html',
                            title=title,
                            posts=data)

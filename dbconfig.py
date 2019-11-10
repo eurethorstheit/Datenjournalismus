@@ -17,6 +17,6 @@ class dbconfig:
     table_write = True
     table_replace = False
     table_csv_file = ""
-    table_dtypes = dtypes['staedte_de']
+    table_dtypes = dtypes['staedte_de_tiny']
 
 

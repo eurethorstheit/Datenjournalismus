@@ -14,13 +14,15 @@
      $('#table_id').DataTable( {
         "processing": false,
         "serverSide": false,
+        "rowId": 'id',
         "ajax": {
+
             "url": $SCRIPT_ROOT + "/testdb",
             "type": "POST"
         },
         "columns": [
-            { "data": "Stadt" },
-            { "data": "PLZ" }
+            { "data": "stadt" },
+            { "data": "plz" }
         ]
     } );
 } );</script>
