@@ -83,7 +83,7 @@ def putinlistelements():
     title = "Datenbankinhalte darstellen"
     # Get Data from DB
     data = dbNav.get_data_from_db_json('staedte_de_tiny').to_dict('r')
-    return render_template('putinlistelements.html',
+    return render_template('putinlistelements.html', )
 
 # Ausprobierroute
 @app.route("/select/", methods=['GET','POST'])
