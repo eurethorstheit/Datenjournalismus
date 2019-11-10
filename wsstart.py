@@ -38,7 +38,7 @@ class PastebinEntry(Form):
 class Form_Citys(Form):
     stadt = SelectField(
         'Bundesdeutsche Staedte',
-        choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
+        choices=[]
     )
 
 @app.route("/")
@@ -77,7 +77,7 @@ def auswahl_reaktion(_auswahl_reaktion_input_txt = "", _auswahl_reaktion_selStad
     # Initialize Forms
     form = Form_Citys()
     # Add cities into select field
-    form.stadt.choices = [(key['Stadt'],key['Stadt']) for key in data]
+    form.stadt.choices = [ (key['Stadt'],key['Stadt']) for key in data ]
 
     if request.method == 'POST':
         data = request.form.to_dict('stadt')
