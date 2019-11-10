@@ -25,9 +25,9 @@ class GeoEnrichment:
             query += ' Germany'
             query = query.strip()
             print(query)
-            geocode_result = geocoder.mapquest(query, key= self.mapquest_key)
-            #latitude = json.loads(geocode_result.json)[0]['lat']
-            #longitude = json.loads(geocode_result.json)[0]['lng']
+            geocode_result = geocoder.mapquest(query, key=self.mapquest_key)
+            latitude = json.loads(geocode_result.json)[0]['lat']
+            longitude = json.loads(geocode_result.json)[0]['lng']
             #print(latitude)
             #print(longitude)
             #navigator.update_geolocation(city_table, row['id'], longitude, latitude)
@@ -37,7 +37,15 @@ class GeoEnrichment:
 
 if __name__ == '__main__':
     enrichment = GeoEnrichment('../static/config/connection_config.json')
-    navigator = Navigator('../static/config/connection_config.json')
+    with open('../static/config/connection_config.json') as json_data_file:
+        data = json.load(json_data_file)
+    try:
+        connection_prop = data['mysql']
+        navigator = Navigator(connection_prop['user'], connection_prop['passwd'],
+                          connection_prop['host'], connection_prop['db'])
+        #navigator = Navigator('../static/config/connection_config.json')
+    except ConnectionError:
+        pass
     enrichment.enrich_cities('staedte_de_tiny', ['stadt'], navigator)
 
 
