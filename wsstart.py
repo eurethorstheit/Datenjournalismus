@@ -18,8 +18,9 @@ from pydb import Navigator
 topbar = Navbar('MDR-Project',
     View('Homepage / Index', 'index'),
     View('Testdb', 'testdb'),
-    View('In Listenelemente einfügen','putinlistelements'),
+    View('Select field','select'),
     View('Auswahl und Reaktion','auswahl_reaktion'),
+
 )
 
 # Initialisierung Flask
@@ -49,6 +50,19 @@ try:
 except DatabaseError:
     print("connection error")
 
+
+class PastebinEntry(Form):
+    language = SelectField(
+        'Programming Language',
+        choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
+    )
+
+class Form_Citys(Form):
+    stadt = SelectField(
+        'Bundesdeutsche Staedte',
+        choices=[]
+    )
+
 @app.route("/")
 @app.route("/index")
 def index():
@@ -62,6 +76,7 @@ def testdb():
     data = dbNav.get_data_from_db_json('staedte_de_tiny')
     return data
 
+
 # Ausprobierroute zu Forms mit Daten
 @app.route("/putinlistelements", methods=['GET', 'POST'])
 def putinlistelements():
@@ -69,18 +84,39 @@ def putinlistelements():
     # Get Data from DB
     data = dbNav.get_data_from_db_json('staedte_de_tiny').to_dict('r')
     return render_template('putinlistelements.html',
+
+# Ausprobierroute
+@app.route("/select/", methods=['GET','POST'])
+def select():
+    title = "Select Field"
+    # Get Data from DB
+    form = PastebinEntry()
+    return render_template("select.html",
                            title=title,
-                           posts=data)
+                           form=form
+                       )
 
 # Ausprobierroute mit Eingabe und Auswirkung ()
 @app.route("/auswahl_reaktion", methods=['GET','POST'])
-def auswahl_reaktion():
+def auswahl_reaktion(_auswahl_reaktion_input_txt = "", _auswahl_reaktion_selStadt = ""):
     title = "Auswahl mit Dropdown und Reaktion"
     # Get Data from DB
     data = dbNav.get_data_from_db_json('staedte_de_tiny').to_dict('r')
+    # Initialize Forms
+    form = Form_Citys()
+    # Add cities into select field
+    form.stadt.choices = [ (key['Stadt'],key['Stadt']) for key in data ]
+
+    if request.method == 'POST':
+        data = request.form.to_dict('stadt')
+        stadt_auswahl = data['stadt']
+    else:
+        stadt_auswahl = ""
     return render_template('auswahl_reaktion.html',
                            title=title,
-                           posts=data)
+                           form=form,
+                           d_output=stadt_auswahl
+                           )
 
 
 # Ausprobierroute mit variabler Unterseite
@@ -97,5 +133,8 @@ if __name__ == '__main__':
 '''
 https://www.youtube.com/watch?v=BFQfVd0g9sU
 https://pythonspot.com/flask-web-forms/
+
+Probiere, mit SelectField zu arbeiten:
+https://stackoverflow.com/questions/43071278/how-to-get-value-not-key-data-from-selectfield-in-wtforms
 '''
 

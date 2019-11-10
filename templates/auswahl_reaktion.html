@@ -1,33 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>
+<form action="{{ url_for('auswahl_reaktion') }}" method="post">
+
     <h1>{{ title }}</h1>
    <div class="container">
-  <div class="row">
-
-    <div class="col-xs-6">
-
-      <p>Stadt</p>
-        <div class="list-group">
-            <SELECT>
-                {% for post in posts %}
-                    <OPTION Value="#">{{ post.Stadt }}</OPTION>
-                {% endfor%}
-            </SELECT>
-    </div>
-
-    </div>
-
-    <div class="col-xs-6">
-      <p>PLZ</p>
-    <div class="list-group">
-        <a href="#" class="list-group-item list-group-item-action">Hier soll was passieren</a>
-    </div>
-    </div>
-
-  </div>
-</div>
-</div>
-
+       {{ form.stadt.label }}{{ form.stadt }}
+       <input type="submit">
+       <input type="text" name="txt_output" value="{{ d_output }}">
+</form>
 {% endblock content %}
