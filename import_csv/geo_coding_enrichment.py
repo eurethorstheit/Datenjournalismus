@@ -26,12 +26,13 @@ class GeoEnrichment:
             query = query.strip()
             print(query)
             geocode_result = geocoder.mapquest(query, key=self.mapquest_key)
-            latitude = json.loads(geocode_result.json)[0]['lat']
-            longitude = json.loads(geocode_result.json)[0]['lng']
-            #print(latitude)
-            #print(longitude)
-            #navigator.update_geolocation(city_table, row['id'], longitude, latitude)
-            print(geocode_result)
+            print(geocode_result.json)
+            latitude = geocode_result.json['lat']
+            longitude = geocode_result.json['lng']
+            print(latitude)
+            print(longitude)
+            navigator.update_geolocation(city_table, row['id'], longitude, latitude)
+
 
 
 

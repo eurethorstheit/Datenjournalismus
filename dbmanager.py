@@ -19,7 +19,7 @@ def start(**kwargs):
 
     if kwargs['write_to_table']:
         dbconfig.table_write = True
-        dbconfig.table_replace = True
+        dbconfig.table_replace = False
         dbconfig.table_csv_file = kwargs['write_to_table']
         dbconfig.table_name = os.path.basename(dbconfig.table_csv_file).split('.')[0]
         dbconfig.table_dtypes = dtypes[dbconfig.table_name]

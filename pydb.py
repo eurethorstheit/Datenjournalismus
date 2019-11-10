@@ -22,6 +22,16 @@ class Navigator():
         '''
         print("Test")
 
+    def update_geolocation(self, city_table, id_name, longitude, latitude):
+        con = self.engine.connect()
+        sql = "Update {} set lng= {} where id = {}".format(city_table, longitude, id_name)
+        print(sql)
+        con.execute(sql)
+        sql = "Update {} set lat= {} where id = {}".format(city_table, latitude, id_name)
+        print(sql)
+        con.execute(sql)
+        con.close()
+
     def create_table_from_pandas(self, df, table_name, dtypes):
         df.to_sql(
             name=table_name,
