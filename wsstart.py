@@ -11,9 +11,9 @@ from pydb import Navigator
 topbar = Navbar('MDR-Project',
     View('Homepage / Index', 'index'),
     View('Testdb', 'testdb'),
-    View('In Listenelemente einfügen','putinlistelements'),
-    View('Auswahl und Reaktion','auswahl_reaktion'),
     View('Select field','select'),
+    View('Auswahl und Reaktion','auswahl_reaktion'),
+
 )
 
 # Initialisierung Flask
@@ -68,16 +68,6 @@ def select():
                            form=form
                        )
 
-# Ausprobierroute zu Forms mit Daten
-@app.route("/putinlistelements", methods=['GET','POST'])
-def putinlistelements():
-    title = "Datenbankinhalte darstellen"
-    # Get Data from DB
-    data = dbNav.get_data_from_db('staedte_de_tiny').to_dict('r')
-    return render_template('putinlistelements.html',
-                           title=title,
-                           posts=data)
-
 # Ausprobierroute mit Eingabe und Auswirkung ()
 @app.route("/auswahl_reaktion", methods=['GET','POST'])
 def auswahl_reaktion(_auswahl_reaktion_input_txt = "", _auswahl_reaktion_selStadt = ""):
@@ -92,6 +82,8 @@ def auswahl_reaktion(_auswahl_reaktion_input_txt = "", _auswahl_reaktion_selStad
     if request.method == 'POST':
         data = request.form.to_dict('stadt')
         stadt_auswahl = data['stadt']
+    else:
+        stadt_auswahl = ""
 
 
     return render_template('auswahl_reaktion.html',
