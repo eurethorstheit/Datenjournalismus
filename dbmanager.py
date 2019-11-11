@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import json
+
 import click, toml
 import pandas as pd
 import sqlalchemy
@@ -17,7 +19,7 @@ def start(**kwargs):
 
     if kwargs['write_to_table']:
         dbconfig.table_write = True
-        dbconfig.table_replace = True
+        dbconfig.table_replace = False
         dbconfig.table_csv_file = kwargs['write_to_table']
         dbconfig.table_name = os.path.basename(dbconfig.table_csv_file).split('.')[0]
         dbconfig.table_dtypes = dtypes[dbconfig.table_name]
@@ -33,8 +35,11 @@ def start(**kwargs):
 
     else:
         exit("Nothing chosen")
-
-    nav = Navigator()
+    with open('static/config/connection_config.json') as json_data_file:
+        data = json.load(json_data_file)
+        connection_prop = data['mysql']
+    nav = Navigator(connection_prop['user'], connection_prop['passwd'],
+                      connection_prop['host'], connection_prop['db'])
 
     if kwargs['write_to_table']:
         df = pd.read_csv(dbconfig.table_csv_file)
@@ -47,7 +52,7 @@ def start(**kwargs):
         nav.create_table_from_pandas(df, dbconfig.table_name, dbconfig.table_dtypes)
 
     if kwargs['get_table']:
-        data = nav.get_data_from_db(dbconfig.table_name)
+        data = nav.get_data_from_db_json(dbconfig.table_name)
         print(data)
 
     if kwargs['get_query']:
