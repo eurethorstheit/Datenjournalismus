@@ -56,10 +56,23 @@ class Navigator():
         '''
         df = pd.read_sql_table(_table, self.engine)
         df['id'] = df['id'].apply(lambda old_id: 'c_' + str(old_id))
-        #df = df.rename({'id': 'DT_RowId'}, axis='columns')
         result = self.json_extension(df.to_json(orient='records'), len(df.index))
-        print(result)
         return result
+
+    def get_geolocation(self, city_id):
+        con = self.engine.connect()
+        print(city_id)
+        sql = 'Select lng, lat from staedte_de_tiny where id = {}'.format(city_id)
+        print(sql)
+        rs = con.execute(sql)
+        geo = dict()
+        for row in rs:
+            print(row)
+            geo['lng'] = row[0]
+            geo['lat'] = row[1]
+        json_ego = json.dumps(geo)
+        return json_ego
+
 
     def json_extension(self, json_data_result, row_count):
         json_string = '{{"draw":1, "recordsTotal": {}, "recordsFiltered": {}, "data":{}}}'\

@@ -76,6 +76,16 @@ def testdb():
     data = dbNav.get_data_from_db_json('staedte_de_tiny')
     return data
 
+@app.route("/mark_city", methods=['GET', 'POST'])
+def get_geolocation():
+    id_data = request.get_json()
+    print(id_data)
+    id = id_data['id']
+    print(id)
+    # Get Data from DB
+    data = dbNav.get_geolocation(id)
+    return data
+
 
 # Ausprobierroute zu Forms mit Daten
 @app.route("/putinlistelements", methods=['GET', 'POST'])

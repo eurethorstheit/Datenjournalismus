@@ -3,13 +3,14 @@
 {{super()}}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}">
-
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.css" />-->
 {% endblock styles %}
 {% block scripts %}
   {{super()}}
     <script type="text/javascript"
          src="{{ url_for('static', filename='js/dataTables.min.js') }}"></script>
-    <script type="text/javascript"
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js"></script>-->
+    <<script type="text/javascript"
          src="{{ url_for('static', filename='js/leaflet.js') }}"></script>
     <script type="text/javascript"
          src="{{ url_for('static', filename='js/german_map.js') }}"></script>
@@ -32,7 +33,20 @@
                 ]
             });
             $('#table_id').on('click', 'tbody tr', function () {
-
+                id = city_table.row(this).data().id;
+                console.log("id"+ id);
+                id = id.split("_")[1];
+                data_obj = {'id':id};
+                $.ajax({
+                    method: "POST",
+                    url: "/mark_city",
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify(data_obj)
+                }).done(function( msg ) {
+                    geocode = JSON.parse(msg)
+                    console.log(german_map)
+                    mark_city(geocode.lng, geocode.lat)
+                });
             });
     } );</script>
 {% endblock %}
