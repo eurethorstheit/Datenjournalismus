@@ -32,6 +32,26 @@
                     {"data": "plz"}
                 ]
             });
+            $("#check-all_cities").click(function () {
+                console.log("change")
+                isChecked = $("#check-all_cities").is(':checked');
+                console.log(isChecked);
+                if (isChecked) {
+                    $.ajax({
+                        method: "POST",
+                        url: "/mark_all_city",
+                        contentType: 'application/json;charset=UTF-8'
+                    }).done(function (msg) {
+                        console.log(msg)
+                        geocodes = JSON.parse(msg);
+                        for (c_index = 0; c_index < geocodes.length; c_index++) {
+                            mark_city(geocodes[c_index].lng, geocodes[c_index].lat);
+                        }
+                    })
+                }else {
+                    clear_all_markers();
+                }
+            });
             $('#table_id').on('click', 'tbody tr', function () {
                 id = city_table.row(this).data().id;
                 console.log("id"+ id);

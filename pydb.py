@@ -74,6 +74,7 @@ class Navigator():
         return json_ego
 
 
+
     def json_extension(self, json_data_result, row_count):
         json_string = '{{"draw":1, "recordsTotal": {}, "recordsFiltered": {}, "data":{}}}'\
             .format(row_count, row_count, json_data_result)

@@ -6,7 +6,8 @@ from flask_bootstrap import Bootstrap
 from flask_nav.elements import Navbar, View
 from flask_nav import Nav
 from flask_bootstrap import WebCDN
-
+from import_csv.db_manager import DbManager
+from import_csv.geo_coordinator import GeoCoordinator
 
 
 from flask_wtf import FlaskForm
@@ -32,7 +33,7 @@ app.extensions['bootstrap']['cdns']['data_tables'] = \
     WebCDN("https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js")
 app.config['EXPLAIN_TEMPLATE_LOADING'] = True
 app.config['SECRET_KEY'] = 'secretkey' # Notwendig fuer Forms
-
+app.config['CITY_TABLE'] = 'staedte_de'
 
 # Navigationsbar
 nav = Nav(app)
@@ -45,8 +46,9 @@ with app.open_resource('static/config/connection_config.json') as json_data_file
     data = json.load(json_data_file)
 try:
     connection_prop = data['mysql']
-    dbNav = Navigator(connection_prop['user'], connection_prop['passwd'],
-                      connection_prop['host'], connection_prop['db'])
+    db_manager = DbManager(connection_prop['user'], connection_prop['passwd'],
+                      connection_prop['host'], connection_prop['db'], 3306)
+    geo_coordinator = GeoCoordinator(db_manager.connection)
 except DatabaseError:
     print("connection error")
 
@@ -73,7 +75,7 @@ def index():
 def testdb():
     title = "Datenbankinhalte darstellen"
     # Get Data from DB
-    data = dbNav.get_data_from_db_json('staedte_de_tiny')
+    data = db_manager.get_data_from_db_json(app.config['CITY_TABLE'])
     return data
 
 @app.route("/mark_city", methods=['GET', 'POST'])
@@ -83,7 +85,13 @@ def get_geolocation():
     id = id_data['id']
     print(id)
     # Get Data from DB
-    data = dbNav.get_geolocation(id)
+    data = geo_coordinator.get_geocode_for_city(app.config['CITY_TABLE'], id)
+    return data
+
+@app.route("/mark_all_city", methods=['GET', 'POST'])
+def get_all_geolocation():
+    # Get Data from DB
+    data = geo_coordinator.get_geocodes(app.config['CITY_TABLE'])
     return data
 
 
@@ -92,7 +100,7 @@ def get_geolocation():
 def putinlistelements():
     title = "Datenbankinhalte darstellen"
     # Get Data from DB
-    data = dbNav.get_data_from_db_json('staedte_de_tiny').to_dict('r')
+    data = db_manager.get_data_from_db('staedte_de_tiny').to_dict('r')
     return render_template('putinlistelements.html', )
 
 # Ausprobierroute
@@ -111,7 +119,7 @@ def select():
 def auswahl_reaktion(_auswahl_reaktion_input_txt = "", _auswahl_reaktion_selStadt = ""):
     title = "Auswahl mit Dropdown und Reaktion"
     # Get Data from DB
-    data = dbNav.get_data_from_db_json('staedte_de_tiny').to_dict('r')
+    data = db_manager.get_data_from_db('staedte_de_tiny').to_dict('r')
     # Initialize Forms
     form = Form_Citys()
     # Add cities into select field

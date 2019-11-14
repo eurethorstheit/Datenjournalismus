@@ -1,6 +1,9 @@
 import json
 import geocoder
+
+from import_csv.db_manager import DbManager
 from pydb import Navigator
+
 
 
 GOOGLE_URL = "https://maps.googleapis.com/maps/api/geocode/json?address="
@@ -18,6 +21,7 @@ class GeoEnrichment:
 
     def enrich_cities(self, city_table, columns: list, db_navigator: Navigator):
         city_data_frame = db_navigator.get_data_from_db(city_table)
+
         for index, row in city_data_frame.iterrows():
             query = ''
             for column_name in columns:
@@ -31,23 +35,38 @@ class GeoEnrichment:
             longitude = geocode_result.json['lng']
             print(latitude)
             print(longitude)
-            navigator.update_geolocation(city_table, row['id'], longitude, latitude)
+            db_navigator.update_geolocation(city_table, row['id'], longitude, latitude)
 
-
+    def enrich_cities_connector(self, city_table, columns: list, connector: DbManager):
+        city_data_frame = connector.get_data_from_db(city_table)
+        cursor = connector.connection.cursor()
+        sql = """UPDATE {} set lng = %s, lat=%s where id = %s""".format(city_table)
+        for index, row in city_data_frame.iterrows():
+            query = ''
+            for column_name in columns:
+                query += row[column_name] + ' '
+            query += ' Germany'
+            query = query.strip()
+            print(query)
+            geocode_result = geocoder.mapquest(query, key=self.mapquest_key)
+            print(geocode_result.json)
+            latitude = geocode_result.json['lat']
+            longitude = geocode_result.json['lng']
+            print(latitude)
+            print(longitude)
+            cursor.execute(sql, (row['id'], longitude, latitude))
+        cursor.close()
 
 
 if __name__ == '__main__':
     enrichment = GeoEnrichment('../static/config/connection_config.json')
-    with open('../static/config/connection_config.json') as json_data_file:
-        data = json.load(json_data_file)
     try:
-        connection_prop = data['mysql']
-        navigator = Navigator(connection_prop['user'], connection_prop['passwd'],
-                          connection_prop['host'], connection_prop['db'])
+        db_manager = DbManager.from_config_file('../static/config/connection_config.json')
         #navigator = Navigator('../static/config/connection_config.json')
     except ConnectionError:
         pass
-    enrichment.enrich_cities('staedte_de_tiny', ['stadt'], navigator)
+    enrichment.enrich_cities_connector('staedte_de_tiny', ['stadt'], db_manager)
+    #enrichment.enrich_cities('staedte_de', ['stadt'], navigator)
 
 
 
